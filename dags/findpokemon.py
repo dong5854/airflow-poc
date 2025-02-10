@@ -9,10 +9,14 @@ from airflow.decorators import dag, task
     schedule="@daily",
     start_date=pendulum.datetime(2025, 1, 1, tz="Asia/Seoul"),
     catchup=False,
+    params={
+        "pokemon_name": "pikachu"
+    },
 )
 def findpokemon():
     @task
-    def get_pokemon_data(pokemon_name: str):
+    def get_pokemon_data(**context):
+        pokemon_name = context['params']['pokemon_name']
         url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name}"
         try:
             response = requests.get(url)
@@ -28,8 +32,8 @@ def findpokemon():
             print(json.dumps(data, indent=2))  # Airflow 로그에서 확인 가능
         else:
             print("포켓몬 데이터를 가져오지 못했습니다.")
-
-    pokecard_data = get_pokemon_data("pikachu")
+    
+    pokecard_data = get_pokemon_data()
     pokecard_data >> print_data(pokecard_data)
 
 findpokemon()

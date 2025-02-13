@@ -284,5 +284,16 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
 volumes:
   postgres-db-volume:
+  ollama:
+
